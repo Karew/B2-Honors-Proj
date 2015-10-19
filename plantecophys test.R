@@ -1,5 +1,4 @@
 #Karen tries PlantEcoPhys
-#Author: Dave Moore
 #Date: 10/12/2015
 #Purpose: Trying to use some of the plantecophys package on Karen's data, specifically the fitaci 
 #function
@@ -19,6 +18,7 @@ library(grid) #required for 'unit'
 
 #Load data
 a18_data=read.table("data//b2 pop a18 kw 09-18-15",skip = 18,sep="\t", header=FALSE)
+print(a18_data)
 a18_data_headers=read.table("data//b2 pop a18 kw 09-18-15",skip = 16, nrows = 1,
                             stringsAsFactors = FALSE,sep="\t", header=FALSE)
 a18_columns=as.list(a18_data_headers)

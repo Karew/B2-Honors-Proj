@@ -5,8 +5,8 @@
 
 
 # updated plantecophys to developer version 0.6.6
-# library(devtools)
-# install_bitbucket("remkoduursma/plantecophys")
+#library(devtools)
+#install_bitbucket("remkoduursma/plantecophys")
 
 #Manual: https://cran.r-project.org/web/packages/plantecophys/plantecophys.pdf 
 

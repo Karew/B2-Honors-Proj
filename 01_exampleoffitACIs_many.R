@@ -20,11 +20,11 @@ if (!require("PEcAn.photosynthesis",character.only = TRUE))
 
 #note you will get an error 
 
-
+#create objects called filepath & tempFilelist
 filepath="./data/"
 tempFilelist = list.files(filepath,pattern="*.*")
 
-#reading data files using pecan.photosynthesis fucntion read.licor
+#reading data files using pecan.photosynthesis function read.licor
 myfiles = do.call("rbind", lapply(paste0(filepath,tempFilelist), function(x) read.Licor(x)))
 
 
@@ -57,10 +57,15 @@ aci_plot + facet_wrap(~ fname) +
   xlab("Ci")
 
 
-#using fitacis from plantecophys to fit all curves at once
-
+#using fitacis from plantecophys to fit all curves at once.
 Myacis= fitacis(myfiles, "fname")
 
+
+#plotting your ACI curves using plantecophys 
+plot(Myacis, how="manyplots")
+
+#Get Vcmax and Jmax 
+coef(Myacis)
 
 #using dplyr
 
@@ -75,8 +80,6 @@ TPUest = ungroup(myfiles) %>%
 #think about "select" "filter"
 
 
-#plotting your ACI cuves using plantecophys 
-plot(Myacis, how="manyplots")
 
 # #extract coefficients from the data
 # IsopreneACI_coef <- coef(IsopreneACI_fitsbycurve)
