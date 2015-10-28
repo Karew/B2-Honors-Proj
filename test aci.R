@@ -1,3 +1,31 @@
+# #code scraps
+# 
+# 
+# To save a file
+save(aci_2014_list, file="aci_2014_list_qc.Rda")
+
+load("aci_2014_list_qc.Rda")
+
+
+#ian's code for photosynthesis
+# https://github.com/davidjpmoore/B2Pop_Physiology
+
+# Dave's isoprene code'
+#https://github.com/davidjpmoore/Isoprene2015_B2Pop
+
+
+KarenACI_qc <- do.call("rbind", KarenMaster)
+
+library(dplyr)
+# 
+# USE DPLYR to filter out the QC^=1
+
+#using fitacis from plantecophys to fit all curves at once.
+Myacis= fitacis(KarenACI_qc, "fname")
+
+
+
+
 # Karen Wang
 # B2 Honors Project
 
