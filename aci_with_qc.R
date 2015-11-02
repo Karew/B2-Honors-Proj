@@ -1,5 +1,5 @@
 #Author: Karen Wang
-#Date: 10/26/2015
+#Date: 11/02/2015
 #Purpose: Read in all Licor files and do QC with PEcAn, fit A/Ci curve with plantecophys
 
 #Installing PEcAn.photosynthesis as a stand alone
@@ -15,9 +15,6 @@ filepath="./data/"
 tempFilelist = list.files(filepath,pattern="b2 pop")
 
 ##Reading data files using PEcAn.photosynthesis function read.Licor
-#One way to do it
-#myfiles = do.call("rbind", lapply(paste0(filepath,tempFilelist), function(x) read.Licor(x)))
-
 #Preferred way: load files to a list
 setwd("C:/Users/Karen/Documents/B2-Honors-Proj")
 cpath = getwd()
@@ -25,24 +22,15 @@ inbetween = "/data/"
 #Creates KarenFiles object that is a list of the file locations
 KarenFiles = paste0(cpath,inbetween,tempFilelist)
 
+#One way to do it (for use with ggplot)
+myfiles = do.call("rbind", lapply(paste0(filepath,tempFilelist), function(x) read.Licor(x)))
+
 ##Drawing some plots with GGPLOT2
 library(ggplot2)
 #Sets up the type of plot
 aci_plot = ggplot(data=myfiles, aes(x=Ci, y=Photo))
 
-
-# #This draws all the curves on one plot (not preferred)
-# #aci_plot + 
-# #  geom_point(colour="black", size = 2.5) +
-# #theme_classic() +
-#   theme(axis.text=element_text(size=20),
-#         axis.title=element_text(size=22,face="bold")) + 
-#   theme(panel.border = element_blank(), axis.line = element_line(colour="black", size=2, lineend="square"))+
-#   theme(axis.ticks = element_line(colour="black", size=2, lineend="square"))+
-#   ylab("Assimilation (umol/m2/sec)")+
-#   xlab("Ci")
-
-#this draws each curve in a different frame using "facet_wrap"
+##This draws each curve in a different frame using "facet_wrap"
 aci_plot + facet_wrap(~ fname) + 
   geom_point(colour="black", size = 2.5) +
   theme_classic() +
@@ -52,6 +40,7 @@ aci_plot + facet_wrap(~ fname) +
   theme(axis.ticks = element_line(colour="black", size=2, lineend="square"))+
   ylab("Assimilation (umol/m2/sec)")+
   xlab("Ci")
+#See some outliers and weird stuff going, so need to perform a QC
 
 ##Perform QA/QC to get rid of outliers
 #Make master list and apply read.Licor
@@ -61,30 +50,48 @@ KarenMaster = lapply(KarenFiles, read.Licor)
 for(i in 1:length(KarenMaster)){
   KarenMaster[[i]] = Licor.QC(KarenMaster[[i]],curve = "ACi")
 }
-#this may take a while, just let it go.
+#This may take a while, just let it go.
 
+#Save the QC
+save(KarenMaster, file="KarenMaster.Rda")
+
+load("KarenMaster.Rda")
+
+#Combine data into one dataframe
+KarenACI_qc = do.call("rbind", KarenMaster)
+
+# USE DPLYR to filter out the QC^=1
+library(dplyr)
+dplyr::tbl_df(KarenACI_qc)
+dplyr::filter(KarenACI_qc,)
+# if("QC" %in% colnames(dat)){
+#   dat = dat[-which(dat$QC < 1),]  
+# } else{
+#   QC = rep(1,nrow(dat))
+#   dat = cbind(dat,QC)
+# }
 
 #using fitacis from plantecophys to fit all curves at once.
-Myacis= fitacis(myfiles, "fname")
+KarenAcis= fitacis(KarenACI_qc, "fname")
 
 
 #plotting your ACI curves using plantecophys 
-plot(Myacis, how="manyplots")
+plot(KarenAcis, how="manyplots")
 
 #Get Vcmax and Jmax 
-coef(Myacis)
+coef(KarenAcis)
 
-#using dplyr
-
-TPUest = ungroup(myfiles) %>% 
-  
-  arrange(fname,Ci) %>%
-  group_by(fname) %>% 
-  
-  mutate(deltaPhoto = Photo - lag(Photo, default = 0)) %>% #calculate difference in photosynthesis from Ci to CI
-  
-  mutate(TPUlim = as.numeric(deltaPhoto < 0)) #indexing whether there is TPU limitation
-#think about "select" "filter"
+# #using dplyr
+# 
+# TPUest = ungroup(myfiles) %>% 
+#   
+#   arrange(fname,Ci) %>%
+#   group_by(fname) %>% 
+#   
+#   mutate(deltaPhoto = Photo - lag(Photo, default = 0)) %>% #calculate difference in photosynthesis from Ci to CI
+#   
+#   mutate(TPUlim = as.numeric(deltaPhoto < 0)) #indexing whether there is TPU limitation
+# #think about "select" "filter"
 
 
 
