@@ -27,8 +27,41 @@ tempFilelist = list.files(filepath,pattern="*.*")
 #reading data files using pecan.photosynthesis function read.licor
 myfiles = do.call("rbind", lapply(paste0(filepath,tempFilelist), function(x) read.Licor(x)))
 
+#read in the thickness data
+
+## Get list of LI-COR 6400 file names (ASCII not xls)
+filenames <- system.file("extdata", paste0("flux-course-",rep(1:6,each=2),c("aci","aq")), package = "PEcAn.photosynthesis")
+
+## Load files to a list
+master = lapply(filenames, read.Licor)
+
+## try to do with Karen's data:
+
+#create objects called filepath & tempFilelist
+filepath="./data/"
+tempFilelist = list.files(filepath,pattern="*.*")
+
+cpath= getwd()
+inbetween = "/data/"
+KarenFiles = paste0(cpath,inbetween,tempFilelist)
+KarenFiles
+
+#make master list
+KarenMaster = lapply(KarenFiles, read.Licor)
+
+
+#run the QA/QC on just the first file "b2 pop a18 kw 09-18-15" 
+KarenMaster[[1]] <- Licor.QC(KarenMaster[[1]], curve = "ACi")
+#run on 2nd file
+KarenMaster[[2]] <- Licor.QC(KarenMaster[[2]], curve = "ACi")
+
+#for all the files in KarenMaster
+for(i in 1:length(KarenMaster)){
+  KarenMaster[[i]] = Licor.QC(KarenMaster[[i]],curve = "ACi")
+}
 
 #drawing some plots with GGPLOT2
+library(PEcAn.photosynthesis)
 
 #sets up the type of plot
 aci_plot <- ggplot(data=myfiles, aes(x=Ci, y=Photo))
