@@ -22,13 +22,14 @@ if (!require("PEcAn.photosynthesis",character.only = TRUE))
 
 #create objects called filepath & tempFilelist
 filepath="./data/"
-tempFilelist = list.files(filepath,pattern="*.*")
+tempFilelist = list.files(filepath,pattern="b2 pop")
 
 #reading data files using pecan.photosynthesis function read.licor
 myfiles = do.call("rbind", lapply(paste0(filepath,tempFilelist), function(x) read.Licor(x)))
 
 #read in the thickness data
 
+##Example from Mike Dietz
 ## Get list of LI-COR 6400 file names (ASCII not xls)
 filenames <- system.file("extdata", paste0("flux-course-",rep(1:6,each=2),c("aci","aq")), package = "PEcAn.photosynthesis")
 
