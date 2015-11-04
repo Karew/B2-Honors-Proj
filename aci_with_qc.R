@@ -60,17 +60,23 @@ load("KarenMaster.Rda")
 #Combine data into one dataframe
 KarenACI_qc = do.call("rbind", KarenMaster)
 
-# USE DPLYR to filter out the QC^=1
+## USE DPLYR to extract the QC passes (QC=1)
 library(dplyr)
 dplyr::tbl_df(KarenACI_qc)
-dplyr::filter(KarenACI_qc,)
-# if("QC" %in% colnames(dat)){
-#   dat = dat[-which(dat$QC < 1),]  
+dplyr::filter(KarenACI_qc, QC == 1)
+
+## Another way to do it
+# if("QC" %in% colnames(KarenACI_qc)){
+#   KarenACI_qc = KarenACI_qc[-which(KarenACI_qc$QC < 1),]  
 # } else{
-#   QC = rep(1,nrow(dat))
-#   dat = cbind(dat,QC)
+#   QC = rep(1,nrow(KarenACI_qc))
+#   KarenACI_qc = cbind(KarenACI_qc,QC)
 # }
 
+library(plantecophys)
+
+##Stuck here, getting error about having zero observations 
+##in my group variable
 #using fitacis from plantecophys to fit all curves at once.
 KarenAcis= fitacis(KarenACI_qc, "fname")
 
@@ -81,40 +87,3 @@ plot(KarenAcis, how="manyplots")
 #Get Vcmax and Jmax 
 coef(KarenAcis)
 
-# #using dplyr
-# 
-# TPUest = ungroup(myfiles) %>% 
-#   
-#   arrange(fname,Ci) %>%
-#   group_by(fname) %>% 
-#   
-#   mutate(deltaPhoto = Photo - lag(Photo, default = 0)) %>% #calculate difference in photosynthesis from Ci to CI
-#   
-#   mutate(TPUlim = as.numeric(deltaPhoto < 0)) #indexing whether there is TPU limitation
-# #think about "select" "filter"
-
-
-
-# #extract coefficients from the data
-# IsopreneACI_coef <- coef(IsopreneACI_fitsbycurve)
-# 
-# 
-# #select variables that define treatments
-# Trts_IsopreneACI00 = IsopreneACIs_outlyrsRmoved %>%
-#   select(line, dateMeas, ACIgroups, Tleaf)
-# 
-# #reduce to unique definition rows
-# Trts_IsopreneACI = Trts_IsopreneACI00 %>%
-#   distinct(ACIgroups)
-# 
-# #merge data frames to regain the Genotype and Temperature
-# IsopreneACI_coef_byTRT01 = inner_join(Trts_IsopreneACI,IsopreneACI_coef, by="ACIgroups" )
-# 
-# IsopreneACI_coef_byTRT = IsopreneACI_coef_byTRT01  %>%
-#   mutate(Genotype=line, MeasDate=dateMeas)   %>%
-#   group_by(Genotype, Tleaf)   %>%
-#   select(-dateMeas,-line)
-# 
-# 
-# save(IsopreneACI_coef_byTRT, file="IsopreneACI_coef_byTRT.Rda")
-# save(IsopreneACI_coef_byTRT01, file="IsopreneACI_coef_byTRT01.Rda")
