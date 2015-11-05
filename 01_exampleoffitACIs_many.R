@@ -7,13 +7,24 @@
 #install rjags 
 #install Rtools
 
-#installing PEcAn.photosynthesis as a stand alone
-if (!require("PEcAn.photosynthesis",character.only = TRUE))
-{
-  library(devtools)
-  library(ggplot2)
-  install_github("PecanProject/pecan/modules/photosynthesis") 
-}
+#Manual: https://cran.r-project.org/web/packages/plantecophys/plantecophys.pdf 
+
+library (plantecophys)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(grid) #required for 'unit'
+#Load data
+
+# #installing PEcAn.photosynthesis as a stand alone
+# if (!require("PEcAn.photosynthesis",character.only = TRUE))
+# {
+#   library(devtools)
+#   library(ggplot2)
+#   install_github("PecanProject/pecan/modules/photosynthesis") 
+# }
+
+library(PEcAn.photosynthesis)
 
 #note you need rjags installed in R and also JAGS (stand alone application) installed on your computer
 #note you will also need Rtools installed.
@@ -29,18 +40,18 @@ myfiles = do.call("rbind", lapply(paste0(filepath,tempFilelist), function(x) rea
 
 #read in the thickness data
 
-##Example from Mike Dietz
-## Get list of LI-COR 6400 file names (ASCII not xls)
-filenames <- system.file("extdata", paste0("flux-course-",rep(1:6,each=2),c("aci","aq")), package = "PEcAn.photosynthesis")
-
-## Load files to a list
-master = lapply(filenames, read.Licor)
-
-## try to do with Karen's data:
-
-#create objects called filepath & tempFilelist
-filepath="./data/"
-tempFilelist = list.files(filepath,pattern="*.*")
+# ##Example from Mike Dietz
+# ## Get list of LI-COR 6400 file names (ASCII not xls)
+# filenames <- system.file("extdata", paste0("flux-course-",rep(1:6,each=2),c("aci","aq")), package = "PEcAn.photosynthesis")
+# 
+# ## Load files to a list
+# master = lapply(filenames, read.Licor)
+# 
+# ## try to do with Karen's data:
+# 
+# #create objects called filepath & tempFilelist
+# filepath="./data/"
+# tempFilelist = list.files(filepath,pattern="*.*")
 
 cpath= getwd()
 inbetween = "/data/"
@@ -91,8 +102,11 @@ aci_plot + facet_wrap(~ fname) +
   xlab("Ci")
 
 
+df <- data.frame(matrix(unlist(KarenMaster), nrow=29, byrow=T))
+KarenMasterDF=do.call(rbind.data.frame, KarenMaster)
+
 #using fitacis from plantecophys to fit all curves at once.
-Myacis= fitacis(myfiles, "fname")
+Myacis= fitacis(KarenMasterDF, "fname")
 
 
 #plotting your ACI curves using plantecophys 
