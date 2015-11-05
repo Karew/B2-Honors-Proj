@@ -77,12 +77,20 @@ library(plantecophys)
 
 ##Stuck here, getting error about having zero observations 
 ##in my group variable
+
+#Troubleshoot using just one curve that I know can be fitted 
+#with fitaci
+test_Aci = dplyr::filter(KarenACI_qc, fname == "b2 pop a18 kw 09-18-15 edit")
+single_Aci = fitaci(test_Aci, Tcorrect=FALSE)
+plot(single_Aci)
+#which works
+
 #using fitacis from plantecophys to fit all curves at once.
-KarenAcis= fitacis(KarenACI_qc, "fname")
+All_Acis= fitacis(KarenACI_qc, "fname")
 
 
 #plotting your ACI curves using plantecophys 
-plot(KarenAcis, how="manyplots")
+plot(All_Acis, how="manyplots")
 
 #Get Vcmax and Jmax 
 coef(KarenAcis)
