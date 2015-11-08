@@ -1,5 +1,5 @@
 #Author: Karen Wang
-#Date: 11/02/2015
+#Date: 11/06/2015
 #Purpose: Read in all Licor files and do QC with PEcAn, fit A/Ci curve with plantecophys
 
 #Installing PEcAn.photosynthesis as a stand alone
@@ -66,7 +66,7 @@ KarenACI_qc = do.call("rbind", KarenMaster)
 # KarenACI_qc_filt = filter(KarenACI_qc, QC == 1)
 
 
-## Another way to do it
+##Another way to do it
 if("QC" %in% colnames(KarenACI_qc)){
  KarenACI_qc = KarenACI_qc[-which(KarenACI_qc$QC < 1),]  
 } else{
@@ -136,14 +136,17 @@ All_Acis= fitacis(KarenACI_qc, "fname")
 plot(All_Acis, how="manyplots")
 
 #Get Vcmax and Jmax 
-quicktest= coef(All_Acis)
+Variables = coef(All_Acis)
+
+#Interesting correlation:
+plot(Variables$Jmax,Variables$Vcmax)
 
 #some things to look at 
 #https://github.com/CourtneyCampany/EucPVE/blob/master/clean%20Scripts/fitaci.R 
 
 #we need to do some stats
 
-# need to compare geonotypes
+# need to compare genotypes
 # need to compare between weeks
 # is the difference between weeks the same for both genotypes
 
