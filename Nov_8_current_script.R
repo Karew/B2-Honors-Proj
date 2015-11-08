@@ -78,3 +78,15 @@ Variables$loc = substring(Variables$fname, 8,10)
 All_Data = merge(loc_and_geno,Variables, by = "loc")
 #Dropping the unecessary variables to get our summary dataframe
 All_Data = All_Data[c("date", "loc","geno", "Vcmax", "Jmax")]
+
+#Changing the date from character to date object
+All_Data$date = strptime(All_Data$date, "%m-%d-%y")
+All_Data$date = as.Date(All_Data$date)
+
+#Trying out some time series plots
+library(dplyr)
+just_Euro = dplyr::filter(All_Data, geno=="European")
+plot(just_Euro$date, just_Euro$Vcmax)
+
+just_MoWa = dplyr::filter(All_Data, geno=="Missouri x Washington")
+plot(just_MoWa$date, just_MoWa$Vcmax)
