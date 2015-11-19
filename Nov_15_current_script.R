@@ -6,8 +6,9 @@
 # #Installing PEcAn.photosynthesis as a stand alone
 # if (!require("PEcAn.photosynthesis",character.only = TRUE))
 # {
-#   library(devtools)
-#   library(ggplot2)
+  library(devtools)
+  library(ggplot2)
+  library(plyr)
 #   install_github("PecanProject/pecan/modules/photosynthesis") 
 # }
 # #Create objects called filepath & tempFilelist
@@ -120,14 +121,49 @@ All_Data = All_Data[c("Date", "Location","Genotype", "Vcmax", "Jmax")]
 All_Data$Date = strptime(All_Data$Date, "%m-%d-%y")
 All_Data$Date = as.Date(All_Data$Date)
 
-#Trying out some time series plots
+#Separating the genotypes
 library(dplyr)
 just_Euro = dplyr::filter(All_Data, Genotype=="European")
-plot(just_Euro$Date, just_Euro$Vcmax)
-
 just_MoWa = dplyr::filter(All_Data, Genotype=="Missouri x Washington")
-plot(just_MoWa$Date, just_MoWa$Vcmax)
 
+#Basic stats
+MoWa_stats = ddply(just_MoWa, c("Date"),summarise,
+                   N = length(Vcmax),
+                   mean = mean(Vcmax),
+                   sd = sd(Vcmax),
+                   se = sd/sqrt(N)
+)
+MoWa_stats=merge(just_MoWa, MoWa_stats, by = "Date")
+
+Euro_stats = ddply(just_Euro, c("Date"),summarise,
+                   N = length(Vcmax),
+                   mean = mean(Vcmax),
+                   sd = sd(Vcmax),
+                   se = sd/sqrt(N)
+)
+Euro_stats=merge(just_Euro, Euro_stats, by = "Date")
+
+#Time series with error bars
+plot_MoWa = ggplot(MoWa_stats, aes(Date, Vcmax))
+plot_MoWa + geom_point(aes(colour=Location, size=5)) + 
+  scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
+  ggtitle("MO/WA genotype Vcmax time series") +
+  geom_errorbar(aes(ymax=Vcmax+se, ymin=Vcmax-se),width=0.2)
+
+plot_Euro = ggplot(Euro_stats, aes(Date, Vcmax))
+plot_Euro + geom_point(aes(colour=Location, size=5)) + 
+  scale_x_date(breaks = date_breaks(width = "1 week"),labels = date_format("%m/%d"))+
+  ggtitle("European genotype Vcmax time series")+
+  geom_errorbar(aes(ymax=Vcmax+se, ymin=Vcmax-se),width=0.2)
+
+#Vcmax vs Jmax
+coef(lm(Vcmax ~ Jmax, data = All_Data))
+plot_Vcmax_Jmax = ggplot(All_Data, aes(Jmax, Vcmax))
+plot_Vcmax_Jmax + geom_point(aes(colour=Genotype, size = 5)) + 
+  geom_abline(intercept=-18.269, slope=0.641)
+
+#Want to do plots of LMA and leaf thickness vs Vcmax
+#Maybe bar graphs of average LMA/thickness comparing the genotypes
 #Trying to get the thickness data into the main data frame
-load(file = "thickness_df.RDA")
-merge(All_Data,thickness_df, by = c("Location", "Date"))
+load("~/B2-Honors-Proj/data/thickness_df.RDA")
+Thick_and_Data = merge(All_Data,thickness_df, by = c("Location", "Date"))
