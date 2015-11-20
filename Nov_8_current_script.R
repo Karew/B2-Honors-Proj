@@ -47,16 +47,48 @@ if("QC" %in% colnames(KarenACI_qc)){
   KarenACI_qc = cbind(KarenACI_qc,QC)
 }
 
-save (KarenACI_qc, file="KarenACI_qc.RDA")
-
-#plot the data w/ ggplot
-library(ggplot2)
+#fixing KarenACI_qc
 KarenACI_qc = droplevels(KarenACI_qc,fname="b2 pop f05 kw 09-18-15 redo")
 unique(KarenACI_qc$fname)
 
+save (KarenACI_qc, file="KarenACI_qc.RDA")
 
-#using KarenACI_qc AFTER filtering using Mike's do loop to get ride of points that failed the QC
-All_Acis= fitacis(KarenACI_qc, "fname")
+#Loading in the more data
+filepath2="./data2/"
+tempFilelist2 = list.files(filepath2,pattern="b2 pop")
+
+setwd("C:/Users/Karen/Documents/B2-Honors-Proj")
+cpath2 = getwd()
+inbetween2 = "/data2/"
+
+KarenFiles2 = paste0(cpath2,inbetween2,tempFilelist2)
+
+KarenMaster2 = lapply(KarenFiles2, read.Licor)
+
+for(i in 1:length(KarenMaster2)){
+  KarenMaster2[[i]] = Licor.QC(KarenMaster2[[i]],curve = "ACi")
+}
+
+#Save the QC
+save(KarenMaster2, file="KarenMaster2.Rda")
+
+load("KarenMaster2.Rda")
+
+#Combine data into one dataframe
+KarenACI_qc2 = do.call("rbind", KarenMaster2)
+
+if("QC" %in% colnames(KarenACI_qc2)){
+  KarenACI_qc2 = KarenACI_qc2[-which(KarenACI_qc2$QC < 1),]  
+} else{
+  QC = rep(1,nrow(KarenACI_qc2))
+  KarenACI_qc2 = cbind(KarenACI_qc2,QC)
+}
+#Combining the two data loads
+Updated_ACI_qc = rbind(KarenACI_qc, KarenACI_qc2)
+
+#using Updated_ACI_qc AFTER filtering using Mike's do loop to get rid of points that failed the QC
+library(plantecophys)
+All_Acis= fitacis(Updated_ACI_qc, "fname")
 
 #plotting your ACI curves using plantecophys 
 plot(All_Acis, how="manyplots")
