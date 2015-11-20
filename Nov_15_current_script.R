@@ -1,5 +1,5 @@
 #Author: Karen Wang
-#Date: 11/15/2015
+#Date: 11/19/2015
 #Purpose: Script for reading in LiCor files, doing QC, fitting A/Ci. 
 #Then creates summary df for work with stats
 
@@ -9,6 +9,7 @@
   library(devtools)
   library(ggplot2)
   library(plyr)
+  library(dplyr)
 #   install_github("PecanProject/pecan/modules/photosynthesis") 
 # }
 # #Create objects called filepath & tempFilelist
@@ -122,7 +123,6 @@ All_Data$Date = strptime(All_Data$Date, "%m-%d-%y")
 All_Data$Date = as.Date(All_Data$Date)
 
 #Separating the genotypes
-library(dplyr)
 just_Euro = dplyr::filter(All_Data, Genotype=="European")
 just_MoWa = dplyr::filter(All_Data, Genotype=="Missouri x Washington")
 
