@@ -3,15 +3,11 @@
 #Purpose: Script for reading in LiCor files, doing QC, fitting A/Ci. 
 #Then creates summary df for work with stats
 
-# #Installing PEcAn.photosynthesis as a stand alone
-# if (!require("PEcAn.photosynthesis",character.only = TRUE))
-# {
   library(devtools)
   library(ggplot2)
   library(plyr)
   library(dplyr)
-#   install_github("PecanProject/pecan/modules/photosynthesis") 
-# }
+
 # #Create objects called filepath & tempFilelist
 # filepath="./data/"
 # tempFilelist = list.files(filepath,pattern="b2 pop")
