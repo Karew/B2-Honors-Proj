@@ -33,13 +33,13 @@ colnames(Met_units) <- MetCols
 #strip out the the leading text of each element of TIMESTEP
 datestamp = gsub( " .*$", "", Met_dat$TIMESTAMP )
 #apply date format to the text
-Met_dat$rDate <- as.Date(datestamp,"%m/%d/%Y")
+Met_dat$rDate <- as.Date(datestamp,"%Y-%m-%d")
 
 #apply date format to TIMESTAMP directly | this works I haven't tried extracting the time of day from it yet
-Met_dat$rDateT <- as.Date(Met_dat$TIMESTAMP, "%m/%d/%Y %H:%M")
+Met_dat$rDateT <- as.Date(Met_dat$TIMESTAMP, "%Y-%m-%d %H:%M")
 
 # Plots - these are VERY BIG files
 # library(ggplot2)
-# p <- ggplot(Met_dat, aes(rDateT, AirTC_Avg))
-# p + geom_point(colour = "red", size = 3)
+ p <- ggplot(Met_dat, aes(rDateT, AirTC_Avg))
+ p + geom_point(colour = "red", size = 3)
 
