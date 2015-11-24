@@ -17,12 +17,12 @@
 Met_dat = read.csv("data//B2PlantationMetData092013_112015.csv",skip=5,header=FALSE, na.strings=c('-9999','-6999'), stringsAsFactors=FALSE)
 
 #READ MET DATA HEADER FROM CSV FILE
-Met_header = read.csv("data//B2PlantationMetData092013_112015.csv",skip=2,nrows=1,header=FALSE, na.strings=c('-9999','-6999'), stringsAsFactors=FALSE)
+Met_header = read.csv("data//B2PlantationMetData092013_112015.csv",skip=1,nrows=1,header=FALSE, na.strings=c('-9999','-6999'), stringsAsFactors=FALSE)
 #create LIST from header data frame
 MetCols = as.list(Met_header)
 
 #READ MET DATA UNITS FROM CSV FILE
-Met_units  = read.csv("data//B2PlantationMetData092013_112015.csv",skip=3,nrows=2,header=FALSE, na.strings=c('-9999','-6999'), stringsAsFactors=FALSE)
+Met_units  = read.csv("data//B2PlantationMetData092013_112015.csv",skip=2,nrows=2,header=FALSE, na.strings=c('-9999','-6999'), stringsAsFactors=FALSE)
 
 #apply column headers to Met_dat
 colnames(Met_dat) <- MetCols
