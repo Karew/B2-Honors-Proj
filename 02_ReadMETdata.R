@@ -133,3 +133,12 @@ main_with_met = merge(LMA_thick_data, met_df, by.x ="Date", by.y ="V1", all = TR
 names(main_with_met)[names(main_with_met)=="V2"] <- "Avg_Temp"
 main_with_met$Avg_Temp = as.numeric(as.character(main_with_met$Avg_Temp))
 save(main_with_met, file = "main_df.RDA")
+
+#PLOT AVG TEMP VS. TIME
+load("~/B2-Honors-Proj/main_df.RDA")
+plot_met_time = ggplot(main_with_met, aes(Date, Avg_Temp))
+plot_met_time + geom_point(aes(size = 5)) + 
+  ylab("Average Temperature (C)") +  
+  geom_path() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
