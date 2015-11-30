@@ -8,12 +8,14 @@ library(plyr)
 library(dplyr)
 library(scales)
 
-load("~/B2-Honors-Proj/LMA_thick_data.RDA")
+load("~/B2-Honors-Proj/main_df.RDA")
+load("~/B2-Honors-Proj/Final_Acis.RDA")
+load("~/B2-Honors-Proj/Asat_data.RDA")
 
 #PLOT VCMAX VS. TIME 
 #Separating the genotypes
-just_Euro = dplyr::filter(LMA_thick_data, Genotype=="European")
-just_MoWa = dplyr::filter(LMA_thick_data, Genotype=="Missouri x Washington")
+just_Euro = dplyr::filter(main_with_met, Genotype=="European")
+just_MoWa = dplyr::filter(main_with_met, Genotype=="Missouri x Washington")
 
 #Basic stats for MoWa geno
 MoWa_stats = ddply(just_MoWa, c("Date"),summarise,
@@ -157,3 +159,33 @@ plot_thick_LMA + geom_point(aes(colour=Genotype, size = 5)) +
   ylab((bquote('LMA' ~ mg ~ '/' ~ mm^{2}))) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#PLOT AVG TEMP VS. TIME
+load("~/B2-Honors-Proj/main_df.RDA")
+plot_met_time = ggplot(main_with_met, aes(Date, Avg_Temp))
+plot_met_time + geom_point(aes(size = 5)) + 
+  ylab("Average Temperature (C)") +  
+  geom_path() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#PLOT TIME SERIES OF VCMAX WITH COLOR AS INDEX OF AVG TEMP
+plot_met_Vcmax = ggplot(main_with_met, aes(Date, Vcmax))
+plot_met_Vcmax + geom_point(aes(colour = Avg_Temp)) +
+  scale_colour_gradient(low="deepskyblue1", high="red") +
+  ylab(bquote('Vcmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#PLOT FRESH:DRY TIME SERIES
+curious = ggplot(main_df, aes(Date, Ratio))
+curious + geom_point(aes(colour=Genotype, size = 5)) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#PLOT FRESH TIME SERIES
+HMM = ggplot(main_df, aes(Date, Fresh_Weight_mg))
+HMM + geom_point(aes(colour=Genotype, size = 5)) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
