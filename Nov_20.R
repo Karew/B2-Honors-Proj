@@ -157,3 +157,16 @@ Asat_data = merge(LMA_thick_data, Asat_df, by = "fname")
 Asat_data =Asat_data[c("Date", "Location","Genotype","Asat")]
 save(Asat_data, file = "Asat_data.RDA")
 
+#Making a df for conductance:
+by_fname = dplyr::group_by(Final_ACI_qc, fname)
+mean_Cond = dplyr::summarise(by_fname, mean(Cond))
+mean_Cond$Date = substring(mean_Cond$fname, 14, 22)
+mean_Cond$Location = substring(mean_Cond$fname, 8,10)
+mean_Cond = dplyr::mutate(mean_Cond, Location = toupper(mean_Cond$Location))
+
+Location = c('A18','B06','G11','E10','F05','F08')
+Genotype = c('European','European','European','Missouri x Washington','Missouri x Washington','Missouri x Washington')
+loc_and_geno = data.frame(Location,Genotype, stringsAsFactors = FALSE)
+
+Cond = merge(loc_and_geno, mean_Cond, by = "Location")
+save(Cond, file = "Cond.RDA")
