@@ -7,10 +7,12 @@ library(ggplot2)
 library(plyr)
 library(dplyr)
 library(scales)
+library(grid)
 
 load("~/B2-Honors-Proj/main_df.RDA")
 load("~/B2-Honors-Proj/Final_Acis.RDA")
 load("~/B2-Honors-Proj/Asat_data.RDA")
+load("~/B2-Honors-Proj/Final_ACI_qc.RDA")
 
 #PLOT AVG VCMAX VS. TIME 
 #Separating the genotypes
@@ -145,7 +147,7 @@ Euro_Vcmax = rbind(Sept_11.2, Sept_18.2, Sept_25.2, Oct_02.2, Oct_09.2, Oct_16.2
 Euro_Vcmax = Euro_Vcmax[c("Date", "Genotype", "Avg_Temp_degC", "Min_Temp_degC",
                           "Avg.Thickness.mm", "LMA", "LMV", "Fresh_Weight_mg", 
                           "Dry_Weight_mg", "Ratio", "Vcmax_mean2", "Vcmax_se2")]
-library(grid)
+
 Euro_Vcmax_plot = ggplot(Euro_Vcmax, aes(Date, Vcmax_mean2))
 Euro_Vcmax_plot + geom_point(aes(colour = Avg_Temp_degC), size=5) +
   scale_colour_gradient(low="deepskyblue1", high="red") +
@@ -523,4 +525,37 @@ Euro_Asat_time + geom_point(size=3) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
+#Quick look at conductance:
+load("~/B2-Honors-Proj/Cond.RDA")
+names(Cond)[names(Cond)=="mean(Cond)"] <- "Avg_Conductance"
+Cond$Date = strptime(Cond$Date, "%m-%d-%y")
+Cond$Date = as.Date(Cond$Date)
+
+MoWa_Cond = dplyr::filter(Cond, Genotype == "Missouri x Washington")
+by_MowaDate = dplyr::group_by(MoWa_Cond, Date)
+mean_MoWaCond = dplyr::summarise(by_MowaDate, mean(Avg_Conductance))
+names(mean_MoWaCond)[names(mean_MoWaCond)=="mean(Avg_Conductance)"] <- "Avg_Conductance"
+
+MoWa_Cond_plot = ggplot(mean_MoWaCond, aes(Date, Avg_Conductance))
+MoWa_Cond_plot + geom_point(size=3) + 
+  ggtitle("MO/WA genotype Conductance time series") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+Euro_Cond = dplyr::filter(Cond, Genotype == "European")
+by_EuroDate = dplyr::group_by(Euro_Cond, Date)
+mean_EuroCond = dplyr::summarise(by_EuroDate, mean(Avg_Conductance))
+names(mean_EuroCond)[names(mean_EuroCond)=="mean(Avg_Conductance)"] <- "Avg_Conductance"
+
+Euro_Cond_plot = ggplot(mean_EuroCond, aes(Date, Avg_Conductance))
+Euro_Cond_plot + geom_point(size=3) + 
+  ggtitle("European genotype Vcmax time series") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
