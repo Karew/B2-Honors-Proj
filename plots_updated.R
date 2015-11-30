@@ -432,11 +432,23 @@ Nov_13 = as.data.frame(cbind(Nov_13,LMV_mean))
 Nov_13 = head(Nov_13,1)
 Euro_LMV = rbind(Sept_11, Sept_18, Sept_25, Oct_02, Oct_09, Oct_16, Oct_23, Oct_31, Nov_06, Nov_13)
 avg_LMV = rbind(MoWa_LMV, Euro_LMV)
+#getting rid of unnecessary columns
 avg_LMV = as.data.frame(c(avg_LMV[1], avg_LMV[3:8], avg_LMV[10:14], avg_LMV[16]))
-#Also turned out not very compelling...
+save(avg_LMV, file = "avg_LMV.RDA")
+#filter out the 0's as NA's because those are from before we started punching
+avg_LMV = dplyr::filter(avg_LMV, LMV_mean > 0)
+#There is reason to drop some of the low outliers - on 10/09/15, G11 
+#was fresh-weighed with only 1 punch instead of standard 2
+#same thing happened on 10/23/15 with A18
+#on 10/23/15, E10's thickness was not measured
+avg_LMV = dplyr::filter(avg_LMV, LMV_mean > 0.55)
 plot_avg_LMV = ggplot(avg_LMV, aes(Date, LMV_mean))
-plot_avg_LMV + geom_point(aes(colour = Genotype), size=3) +
+plot_avg_LMV + geom_point(aes(colour = Genotype), size=5) +
   ylab((bquote('LMV' ~ mg ~ '/' ~ mm^{3}))) +
+  ggtitle("Leaf mass per volume time series") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
@@ -448,28 +460,52 @@ plot_avg_LMV + geom_point(aes(colour = Genotype), size=3) +
 #   ylab(bquote('Vcmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
 #   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
 #         panel.background = element_blank(), axis.line = element_line(colour = "black"))
-# 
-# #LMV VS. VCMAX
-# #not too compelling
-# plot_LMV_Vcmax = ggplot(main_df, aes(LMV, Vcmax))
-# plot_LMV_Vcmax + geom_point(aes(colour = Genotype), size=3) +
-#   xlab((bquote('LMV' ~ mg ~ '/' ~ mm^{3}))) +
-#   ylab(bquote('Vcmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
-#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-#         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#LMV VS. VCMAX
+load("~/B2-Honors-Proj/summary_stats.RDA")
+summary_stats = as.data.frame(c(summary_stats[1:4], summary_stats[11:14]))
+avg_LMV = as.data.frame(c(avg_LMV[1:2], avg_LMV[13]))
+summary_stats = merge(summary_stats,avg_LMV, by = c("Date", "Genotype"), all = TRUE)
+summary_stats = dplyr::filter(summary_stats,LMV_mean > 0)
+plot_LMV_Vcmax = ggplot(summary_stats, aes(LMV_mean, Vcmax_mean))
+plot_LMV_Vcmax + geom_point(aes(colour = Genotype), size=5) +
+  xlab((bquote('LMV' ~ mg ~ '/' ~ mm^{3}))) +
+  ylab(bquote('Vcmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
+  ggtitle("Leaf mass per volume vs. Vcmax") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 #PLOT THICKNESS TIME SERIES
-plot_day_thick = ggplot(main_df, aes(Date, Avg.Thickness.mm))
+load("~/B2-Honors-Proj/data/Thick_and_Data.RDA")
+Thick_and_Data = dplyr::filter(Thick_and_Data, Avg.Thickness.mm > 0)
+Thick_and_Data[is.na(Thick_and_Data)] <- 0
+group = dplyr::group_by(Thick_and_Data, Date, Genotype)
+avg_thick = dplyr::summarise(group, mean(Avg.Thickness.mm))
+names(avg_thick)[names(avg_thick)=="mean(Avg.Thickness.mm)"] <- "Avg.Thickness.mm"
+avg_thick = dplyr::filter(avg_thick, Genotype != 0)
+plot_day_thick = ggplot(avg_thick, aes(Date, Avg.Thickness.mm))
 plot_day_thick + geom_point(aes(colour = Genotype), size=3)  +
   ylab("Average Leaf Thickness(mm)") +
+  ggtitle("Leaf Thickness time series") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 #PLOT THICKNESS VS. VCMAX
-plot_thick_Vcmax = ggplot(main_df, aes(Avg.Thickness.mm, Vcmax))
+thick_vcmax = merge(summary_stats, avg_thick, by = c("Date", "Genotype"))
+plot_thick_vcmax = ggplot(thick_vcmax, aes(Avg.Thickness.mm, Vcmax_mean))
 plot_thick_Vcmax + geom_point(aes(colour = Genotype), size=3)  +
   xlab("Average Leaf Thickness(mm)") +
   ylab(bquote('Vcmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
+  ggtitle("Leaf Thickness vs. Vcmax") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
@@ -499,19 +535,29 @@ plot_mintemp_time + geom_point(size=5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
-# #FRESH:DRY TIME SERIES
-# #not too compelling
-# ratio_plot = ggplot(main_df, aes(Date, Ratio))
-# ratio_plot + geom_point(aes(colour = Genotype), size=3) + 
-#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-#         panel.background = element_blank(), axis.line = element_line(colour = "black"))
-# 
-# #FRESH WEIGHT TIME SERIES
-# #not too compelling
-# fresh_time = ggplot(main_df, aes(Date, Fresh_Weight_mg))
-# fresh_time + geom_point(aes(colour = Genotype), size=3) + 
-#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-#         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+#FRESH:DRY TIME SERIES
+#creating df with avg Fresh and Dry Weights
+#not too compelling
+avg_ratio = dplyr::filter(main_df, Ratio > 0, LMV > 0.55)
+avg_ratio = dplyr::group_by(avg_ratio, Date, Genotype)
+avg_ratio = dplyr::summarise(avg_ratio, mean(Ratio))
+names(avg_ratio)[names(avg_ratio)=="mean(Ratio)"] <- "Ratio"
+
+ratio_plot = ggplot(avg_ratio, aes(Date, Ratio))
+ratio_plot + geom_point(aes(colour = Genotype), size=3) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#FRESH WEIGHT TIME SERIES
+#not too compelling
+avg_fresh = dplyr::filter(main_df, Fresh_Weight_mg > 0)
+avg_fresh = dplyr::group_by(avg_fresh, Date, Genotype)
+avg_fresh = dplyr::summarise(avg_fresh, mean(Fresh_Weight_mg))
+names(avg_fresh)[names(avg_fresh)=="mean(Fresh_Weight_mg)"] <- "Fresh_Weight_mg"
+fresh_time = ggplot(avg_fresh, aes(Date, Fresh_Weight_mg))
+fresh_time + geom_point(aes(colour = Genotype), size=3) + 
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 #Asat time series
 MoWa_Asat = dplyr::filter(Asat_data, Genotype == "Missouri x Washington")
@@ -552,7 +598,7 @@ names(mean_EuroCond)[names(mean_EuroCond)=="mean(Avg_Conductance)"] <- "Avg_Cond
 
 Euro_Cond_plot = ggplot(mean_EuroCond, aes(Date, Avg_Conductance))
 Euro_Cond_plot + geom_point(size=3) + 
-  ggtitle("European genotype Vcmax time series") +
+  ggtitle("European genotype Conductance time series") +
   theme(plot.title=element_text(family="Times", face="bold", size=30)) +
   theme(axis.title = element_text(size= rel(2.0)))+
   theme(legend.key.size = unit(2.5, "cm")) +
