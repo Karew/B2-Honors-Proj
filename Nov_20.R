@@ -1,5 +1,5 @@
 #Author: Karen Wang
-#Date: 11/19/2015
+#Date: 11/20/2015 * modified 11/29/15 to read in Asat
 #Purpose: Script for reading in LiCor files, doing QC, fitting A/Ci. 
 #Then creates summary df for work with stats
 
@@ -135,6 +135,25 @@ loc_and_geno = data.frame(Location,Genotype, stringsAsFactors = FALSE)
 #Merge in the loc_and_geno df
 LMA_thick_data = merge(loc_and_geno,LMA_thick_data, by = "Location")
 #Dropping the unecessary variables to get our summary dataframe
-LMA_thick_data =LMA_thick_data[c("Date", "Location","Genotype", "Vcmax", "Jmax", "Avg.Thickness.mm","LMA")]
+LMA_thick_data =LMA_thick_data[c("Date", "Location","Genotype", "Vcmax", "Jmax", "Vcmax_SE", "Jmax_SE", "Avg.Thickness.mm","LMA")]
 save(LMA_thick_data, file = "~/B2-Honors-Proj/LMA_thick_data.RDA")
+
+#Filter for getting Asat
+Asat_df = dplyr::filter(Final_ACI_qc, CO2R >= 390)
+Asat_df = dplyr::filter(try, CO2R <= 410)
+Asat_df = Asat_df[c("fname", "Photo")]
+names(Asat_df)[names(Asat_df)=="Photo"] <- "Asat"
+
+load("Thick_and_Data.RDA")
+load("~/B2-Honors-Proj/data/LMA_df.RDA")
+LMA_thick_data = merge(Thick_and_Data, LMA_df, by = c("Location", "Date"), all = TRUE)
+
+Location = c('A18','B06','G11','E10','F05','F08')
+Genotype = c('European','European','European','Missouri x Washington','Missouri x Washington','Missouri x Washington')
+loc_and_geno = data.frame(Location,Genotype, stringsAsFactors = FALSE)
+
+LMA_thick_data = merge(loc_and_geno,LMA_thick_data, by = "Location")
+Asat_data = merge(LMA_thick_data, Asat_df, by = "fname")
+Asat_data =Asat_data[c("Date", "Location","Genotype","Asat")]
+save(Asat_data, file = "Asat_data.RDA")
 
