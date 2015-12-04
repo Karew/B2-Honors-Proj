@@ -78,8 +78,10 @@ MoWa_Vcmax = rbind(Sept_11, Sept_18, Sept_25, Oct_02, Oct_09, Oct_16, Oct_23, Oc
 MoWa_Vcmax = MoWa_Vcmax[c("Date", "Genotype", "Avg_Temp_degC", "Min_Temp_degC",
                           "Avg.Thickness.mm", "LMA", "LMV", "Fresh_Weight_mg", 
                           "Dry_Weight_mg", "Ratio", "Vcmax_mean", "Vcmax_se")]
+
 MoWa_Vcmax_plot = ggplot(MoWa_Vcmax, aes(Date, Vcmax_mean))
 MoWa_Vcmax_plot + geom_point(aes(colour = Avg_Temp_degC), size=5) +
+  geom_abline(aes(intercept=31.41971, slope=0)) +
   scale_colour_gradient(low="deepskyblue1", high="red") +
   scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
   ggtitle("MO/WA genotype Vcmax time series") +
@@ -153,6 +155,7 @@ Euro_Vcmax_plot + geom_point(aes(colour = Avg_Temp_degC), size=5) +
   scale_colour_gradient(low="deepskyblue1", high="red") +
   scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
   ggtitle("European genotype Vcmax time series") +
+  geom_abline(aes(intercept=46.51862, slope=0)) +
   theme(plot.title=element_text(family="Times", face="bold", size=30)) +
   theme(axis.title = element_text(size= rel(2.0)))+
   theme(legend.key.size = unit(2.5, "cm")) +
@@ -226,6 +229,7 @@ MoWa_Jmax_plot + geom_point(aes(colour = MoWa_Jmax$Avg_Temp_degC), size=5) +
   scale_colour_gradient(low="deepskyblue1", high="red") +
   scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
   ggtitle("MO/WA genotype Jmax time series") +
+  geom_abline(aes(intercept=75.96318, slope=0)) +
   theme(plot.title=element_text(family="Times", face="bold", size=30)) +
   theme(axis.title = element_text(size= rel(2.0)))+
   theme(legend.key.size = unit(2.5, "cm")) +
@@ -298,6 +302,7 @@ Euro_Jmax_plot + geom_point(aes(colour = Avg_Temp_degC), size=5) +
   scale_colour_gradient(low="deepskyblue1", high="red") +
   scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
   ggtitle("European genotype Jmax time series") +
+  geom_abline(aes(intercept=97.99166, slope=0)) +
   theme(plot.title=element_text(family="Times", face="bold", size=30)) +
   theme(axis.title = element_text(size= rel(2.0)))+
   theme(legend.key.size = unit(2.5, "cm")) +
@@ -439,7 +444,7 @@ save(avg_LMV, file = "avg_LMV.RDA")
 avg_LMV = dplyr::filter(avg_LMV, LMV_mean > 0)
 #There is reason to drop some of the low outliers - on 10/09/15, G11 
 #was fresh-weighed with only 1 punch instead of standard 2
-#same thing happened on 10/23/15 with A18
+#same thing happened on 10/16/15 with A18
 #on 10/23/15, E10's thickness was not measured
 avg_LMV = dplyr::filter(avg_LMV, LMV_mean > 0.55)
 plot_avg_LMV = ggplot(avg_LMV, aes(Date, LMV_mean))
@@ -463,6 +468,7 @@ plot_avg_LMV + geom_point(aes(colour = Genotype), size=5) +
 
 #LMV VS. VCMAX
 load("~/B2-Honors-Proj/summary_stats.RDA")
+load("~/B2-Honors-Proj/avg_LMV.RDA")
 summary_stats = as.data.frame(c(summary_stats[1:4], summary_stats[11:14]))
 avg_LMV = as.data.frame(c(avg_LMV[1:2], avg_LMV[13]))
 summary_stats = merge(summary_stats,avg_LMV, by = c("Date", "Genotype"), all = TRUE)
@@ -481,13 +487,22 @@ plot_LMV_Vcmax + geom_point(aes(colour = Genotype), size=5) +
 #PLOT THICKNESS TIME SERIES
 load("~/B2-Honors-Proj/data/Thick_and_Data.RDA")
 Thick_and_Data = dplyr::filter(Thick_and_Data, Avg.Thickness.mm > 0)
-Thick_and_Data[is.na(Thick_and_Data)] <- 0
+Thick_and_Data[is.na(Thick_and_Data)] = 0
+needfix = dplyr::filter(Thick_and_Data, Genotype ==0, Location == "B06")
+needfix$Genotype <- replace(needfix$Genotype, needfix$Genotype=="0", "European")
+needfix2 = dplyr::filter(Thick_and_Data, Genotype ==0, Location == "E10")
+needfix2$Genotype <- replace(needfix2$Genotype, needfix2$Genotype=="0", "Missouri x Washington")
+needfix3 = dplyr::filter(Thick_and_Data, Genotype ==0, Location == "F05")
+needfix3$Genotype <- replace(needfix3$Genotype, needfix3$Genotype=="0", "Missouri x Washington")
+needfix4 = dplyr::filter(Thick_and_Data, Genotype ==0, Location == "F08")
+needfix4$Genotype <- replace(needfix4$Genotype, needfix4$Genotype=="0", "Missouri x Washington")
+Thick_and_Data=rbind(Thick_and_Data,needfix, needfix4, needfix3, needfix2)
+Thick_and_Data = dplyr::filter(Thick_and_Data, Genotype != 0)
 group = dplyr::group_by(Thick_and_Data, Date, Genotype)
 avg_thick = dplyr::summarise(group, mean(Avg.Thickness.mm))
 names(avg_thick)[names(avg_thick)=="mean(Avg.Thickness.mm)"] <- "Avg.Thickness.mm"
-avg_thick = dplyr::filter(avg_thick, Genotype != 0)
 plot_day_thick = ggplot(avg_thick, aes(Date, Avg.Thickness.mm))
-plot_day_thick + geom_point(aes(colour = Genotype), size=3)  +
+plot_day_thick + geom_point(aes(colour = Genotype), size=5)  +
   ylab("Average Leaf Thickness(mm)") +
   ggtitle("Leaf Thickness time series") +
   theme(plot.title=element_text(family="Times", face="bold", size=30)) +
@@ -499,7 +514,7 @@ plot_day_thick + geom_point(aes(colour = Genotype), size=3)  +
 #PLOT THICKNESS VS. VCMAX
 thick_vcmax = merge(summary_stats, avg_thick, by = c("Date", "Genotype"))
 plot_thick_vcmax = ggplot(thick_vcmax, aes(Avg.Thickness.mm, Vcmax_mean))
-plot_thick_Vcmax + geom_point(aes(colour = Genotype), size=3)  +
+plot_thick_vcmax + geom_point(aes(colour = Genotype), size=5)  +
   xlab("Average Leaf Thickness(mm)") +
   ylab(bquote('Vcmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
   ggtitle("Leaf Thickness vs. Vcmax") +
@@ -523,6 +538,10 @@ plot_met_time = ggplot(main_df, aes(Date, Avg_Temp_degC))
 plot_met_time + geom_point(size=5) + 
   ylab("Average Temperature (C)") +  
   geom_path() +
+  ggtitle("Average Temperature over time") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
@@ -532,41 +551,64 @@ plot_mintemp_time = ggplot(main_df, aes(Date, Min_Temp_degC))
 plot_mintemp_time + geom_point(size=5) + 
   ylab("Minimum Temperature (C)") +  
   geom_path() +
+  ggtitle("Minimum Temperature over time") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
-#FRESH:DRY TIME SERIES
-#creating df with avg Fresh and Dry Weights
-#not too compelling
-avg_ratio = dplyr::filter(main_df, Ratio > 0, LMV > 0.55)
-avg_ratio = dplyr::group_by(avg_ratio, Date, Genotype)
-avg_ratio = dplyr::summarise(avg_ratio, mean(Ratio))
-names(avg_ratio)[names(avg_ratio)=="mean(Ratio)"] <- "Ratio"
+# #FRESH:DRY TIME SERIES
+# #creating df with avg Fresh and Dry Weights
+# #not too compelling
+# avg_ratio = dplyr::filter(main_df, Ratio > 0, LMV > 0.55)
+# avg_ratio = dplyr::group_by(avg_ratio, Date, Genotype)
+# avg_ratio = dplyr::summarise(avg_ratio, mean(Ratio))
+# names(avg_ratio)[names(avg_ratio)=="mean(Ratio)"] <- "Ratio"
 
-ratio_plot = ggplot(avg_ratio, aes(Date, Ratio))
-ratio_plot + geom_point(aes(colour = Genotype), size=3) + 
+# ratio_plot = ggplot(avg_ratio, aes(Date, Ratio))
+# ratio_plot + geom_point(aes(colour = Genotype), size=3) + 
+#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+#         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+# #FRESH WEIGHT TIME SERIES
+# #not too compelling
+# avg_fresh = dplyr::filter(main_df, Fresh_Weight_mg > 0)
+# avg_fresh = dplyr::group_by(avg_fresh, Date, Genotype)
+# avg_fresh = dplyr::summarise(avg_fresh, mean(Fresh_Weight_mg))
+# names(avg_fresh)[names(avg_fresh)=="mean(Fresh_Weight_mg)"] <- "Fresh_Weight_mg"
+# fresh_time = ggplot(avg_fresh, aes(Date, Fresh_Weight_mg))
+# fresh_time + geom_point(aes(colour = Genotype), size=3) + 
+#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+#         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+# #DRY WEIGHT TIME SERIES
+# #not compelling
+# avg_dry = dplyr::filter(main_df, Dry_Weight_mg > 0)
+# avg_dry = dplyr::group_by(avg_dry, Date, Genotype)
+# avg_dry = dplyr::summarise(avg_dry, mean(Dry_Weight_mg))
+# names(avg_dry)[names(avg_dry)=="mean(Dry_Weight_mg)"] <- "Dry_Weight_mg"
+# dry_time = ggplot(avg_dry, aes(Date, Dry_Weight_mg))
+# dry_time + geom_point(aes(colour = Genotype), size=3) + 
+#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+#         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#ASAT TIME SERIES
+#SAME STORY AS THE VCMAX TIME SERIES
+group_Asat = dplyr::group_by(Asat_data, Genotype, Date)
+Both_Asat = summarise(group_Asat, mean(Asat))
+MoWa_Asat = dplyr::filter(Both_Asat, Genotype == "Missouri x Washington")
+names(MoWa_Asat)[names(MoWa_Asat)=="mean(Asat)"] <- "Asat_mean"
+
+Euro_Asat = dplyr::filter(Both_Asat, Genotype == "European")
+names(Euro_Asat)[names(Euro_Asat)=="mean(Asat)"] <- "Asat_mean"
+
+MoWa_Asat_time = ggplot(MoWa_Asat, aes(Date, Asat_mean))
+MoWa_Asat_time + geom_point(size=3) + 
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
-#FRESH WEIGHT TIME SERIES
-#not too compelling
-avg_fresh = dplyr::filter(main_df, Fresh_Weight_mg > 0)
-avg_fresh = dplyr::group_by(avg_fresh, Date, Genotype)
-avg_fresh = dplyr::summarise(avg_fresh, mean(Fresh_Weight_mg))
-names(avg_fresh)[names(avg_fresh)=="mean(Fresh_Weight_mg)"] <- "Fresh_Weight_mg"
-fresh_time = ggplot(avg_fresh, aes(Date, Fresh_Weight_mg))
-fresh_time + geom_point(aes(colour = Genotype), size=3) + 
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-#Asat time series
-MoWa_Asat = dplyr::filter(Asat_data, Genotype == "Missouri x Washington")
-MoWA_Asat_time = ggplot(MoWa_Asat, aes(Date, Asat))
-MoWA_Asat_time + geom_point(size=3) + 
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
-Euro_Asat = dplyr::filter(Asat_data, Genotype == "European")
-Euro_Asat_time = ggplot(Euro_Asat, aes(Date, Asat))
+Euro_Asat_time = ggplot(Euro_Asat, aes(Date, Asat_mean))
 Euro_Asat_time + geom_point(size=3) + 
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
@@ -604,4 +646,22 @@ Euro_Cond_plot + geom_point(size=3) +
   theme(legend.key.size = unit(2.5, "cm")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+#Curious about location:
+main_df[is.na(main_df)] <- 0
+group_by_loc = dplyr::filter(main_df, Vcmax !=0)
+group_by_loc = dplyr::group_by(main_df, Location)
+group_by_loc = dplyr::summarise(group_by_loc, mean(Vcmax))
+names(group_by_loc)[names(group_by_loc)=="mean(Vcmax)"] <- "Vcmax_mean"
+
+loc_plot = ggplot(data=group_by_loc, aes(x=Location, y=Vcmax_mean)) 
+loc_plot + geom_bar(stat="identity") +
+  ggtitle("Mean Vcmax by Location") +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+
 
