@@ -164,152 +164,152 @@ Euro_Vcmax_plot + geom_point(aes(colour = Avg_Temp_degC), size=5) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
-#PLOT JMAX VS. TIME 
-#MO/WA Jmax time series with error bars
-Sept_11.j = dplyr::filter(just_MoWa, Date == "2015-09-11")
-Jmax_mean = mean(Sept_11.j$Jmax)
-Jmax_se = sum(Sept_11.j$Jmax_SE)
-Sept_11.j = as.data.frame(cbind(Sept_11.j,Jmax_mean, Jmax_se))
-Sept_11.j = head(Sept_11.j,1)
-Sept_18.j = dplyr::filter(just_MoWa, Date == "2015-09-18")
-Jmax_mean = mean(Sept_18.j$Jmax)
-Jmax_se = sum(Sept_18.j$Jmax_SE)
-Sept_18.j = as.data.frame(cbind(Sept_18.j,Jmax_mean, Jmax_se))
-Sept_18.j = head(Sept_18.j,1)
-Sept_25.j = dplyr::filter(just_MoWa, Date == "2015-09-25")
-Jmax_mean = mean(Sept_25.j$Jmax)
-Jmax_se = sum(Sept_25.j$Jmax_SE)
-Sept_25.j = as.data.frame(cbind(Sept_25.j,Jmax_mean, Jmax_se))
-Sept_25.j = head(Sept_25.j,1)
-Oct_02.j = dplyr::filter(just_MoWa, Date == "2015-10-02")
-Jmax_mean = mean(Oct_02.j$Jmax)
-Jmax_se = sum(Oct_02.j$Jmax_SE)
-Oct_02.j = as.data.frame(cbind(Oct_02.j,Jmax_mean, Jmax_se))
-Oct_02.j = head(Oct_02.j,1)
-Oct_09.j = dplyr::filter(just_MoWa, Date == "2015-10-09")
-Jmax_mean = mean(Oct_09.j$Jmax)
-Jmax_se = sum(Oct_09.j$Jmax_SE)
-Oct_09.j = as.data.frame(cbind(Oct_09.j,Jmax_mean, Jmax_se))
-Oct_09.j = head(Oct_09.j,1)
-Oct_16.j = dplyr::filter(just_MoWa, Date == "2015-10-16")
-Jmax_mean = mean(Oct_16.j$Jmax)
-Jmax_se = sum(Oct_16.j$Jmax_SE)
-Oct_16.j = as.data.frame(cbind(Oct_16.j,Jmax_mean, Jmax_se))
-Oct_16.j = head(Oct_16.j,1)
-Oct_23.j = dplyr::filter(just_MoWa, Date == "2015-10-23")
-Jmax_mean = mean(Oct_23.j$Jmax)
-Jmax_se = sum(Oct_23.j$Jmax_SE)
-Oct_23.j = as.data.frame(cbind(Oct_23.j,Jmax_mean, Jmax_se))
-Oct_23.j = head(Oct_23.j,1)
-Oct_31.j = dplyr::filter(just_MoWa, Date == "2015-10-31")
-Oct_31.j[is.na(Oct_31.j)] <- 0
-Jmax_mean = mean(Oct_31.j$Jmax)
-Jmax_se = sum(Oct_31.j$Jmax_SE)
-Oct_31.j = as.data.frame(cbind(Oct_31.j,Jmax_mean, Jmax_se))
-Oct_31.j = head(Oct_31.j,1)
-Nov_06.j = dplyr::filter(just_MoWa, Date == "2015-11-06")
-Nov_06.j[is.na(Nov_06.j)] <- 0
-Jmax_mean = mean(Nov_06.j$Jmax)
-Jmax_se = sum(Nov_06.j$Jmax_SE)
-Nov_06.j = as.data.frame(cbind(Nov_06.j,Jmax_mean, Jmax_se))
-Nov_06.j = head(Nov_06.j,1)
-Nov_13.j = dplyr::filter(just_MoWa, Date == "2015-11-13")
-Nov_13.j[is.na(Nov_13.j)] <- 0
-Jmax_mean = mean(Nov_13.j$Jmax)
-Jmax_se = sum(Nov_13.j$Jmax_SE)
-Nov_13.j = as.data.frame(cbind(Nov_13.j,Jmax_mean, Jmax_se))
-Nov_13.j = head(Nov_13.j,1)
-
-MoWa_Jmax = rbind(Sept_11.j, Sept_18.j, Sept_25.j, Oct_02.j, Oct_09.j, Oct_16.j, Oct_23.j, Oct_31.j, Nov_06.j)
-MoWa_Jmax = MoWa_Jmax[c("Date", "Genotype", "Avg_Temp_degC", "Min_Temp_degC",
-                          "Avg.Thickness.mm", "LMA", "LMV", "Fresh_Weight_mg", 
-                          "Dry_Weight_mg", "Ratio", "Jmax_mean", "Jmax_se")]
-MoWa_Jmax_plot = ggplot(MoWa_Jmax, aes(Date, Jmax_mean))
-MoWa_Jmax_plot + geom_point(aes(colour = MoWa_Jmax$Avg_Temp_degC), size=5) +
-  scale_colour_gradient(low="deepskyblue1", high="red") +
-  scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
-  ggtitle("MO/WA genotype Jmax time series") +
-  geom_abline(aes(intercept=75.96318, slope=0)) +
-  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
-  theme(axis.title = element_text(size= rel(2.0)))+
-  theme(legend.key.size = unit(2.5, "cm")) +
-  geom_errorbar(aes(ymax=Jmax_mean+Jmax_se, ymin=Jmax_mean-Jmax_se),width=3) +
-  ylab(bquote('Jmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
-
-#EUROPEAN Jmax time series with error bars
-Sept_11.2j = dplyr::filter(just_Euro, Date == "2015-09-11")
-Jmax_mean2 = mean(Sept_11.2j$Jmax)
-Jmax_se2 = sum(Sept_11.2j$Jmax_SE)
-Sept_11.2j = as.data.frame(cbind(Sept_11.2j,Jmax_mean2, Jmax_se2))
-Sept_11.2j = head(Sept_11.2j,1)
-Sept_18.2j = dplyr::filter(just_Euro, Date == "2015-09-18")
-Jmax_mean2 = mean(Sept_18.2j$Jmax)
-Jmax_se2 = sum(Sept_18.2j$Jmax_SE)
-Sept_18.2j = as.data.frame(cbind(Sept_18.2j,Jmax_mean2, Jmax_se2))
-Sept_18.2j = head(Sept_18.2j,1)
-Sept_25.2j = dplyr::filter(just_Euro, Date == "2015-09-25")
-Jmax_mean2 = mean(Sept_25.2j$Jmax)
-Jmax_se2 = sum(Sept_25.2j$Jmax_SE)
-Sept_25.2j = as.data.frame(cbind(Sept_25.2j,Jmax_mean2, Jmax_se2))
-Sept_25.2j = head(Sept_25.2j,1)
-Oct_02.2j = dplyr::filter(just_Euro, Date == "2015-10-02")
-Jmax_mean2 = mean(Oct_02.2j$Jmax)
-Jmax_se2 = sum(Oct_02.2j$Jmax_SE)
-Oct_02.2j = as.data.frame(cbind(Oct_02.2j,Jmax_mean2, Jmax_se2))
-Oct_02.2j = head(Oct_02.2j,1)
-Oct_09.2j = dplyr::filter(just_Euro, Date == "2015-10-09")
-Jmax_mean2 = mean(Oct_09.2j$Jmax)
-Jmax_se2 = sum(Oct_09.2j$Jmax_SE)
-Oct_09.2j = as.data.frame(cbind(Oct_09.2j,Jmax_mean2, Jmax_se2))
-Oct_09.2j = head(Oct_09.2j,1)
-Oct_16.2j = dplyr::filter(just_Euro, Date == "2015-10-16")
-Jmax_mean2 = mean(Oct_16.2j$Jmax)
-Jmax_se2 = sum(Oct_16.2j$Jmax_SE)
-Oct_16.2j = as.data.frame(cbind(Oct_16.2j,Jmax_mean2, Jmax_se2))
-Oct_16.2j = head(Oct_16.2j,1)
-Oct_23.2j = dplyr::filter(just_Euro, Date == "2015-10-23")
-Jmax_mean2 = mean(Oct_23.2j$Jmax)
-Jmax_se2 = sum(Oct_23.2j$Jmax_SE)
-Oct_23.2j = as.data.frame(cbind(Oct_23.2j,Jmax_mean2, Jmax_se2))
-Oct_23.2j = head(Oct_23.2j,1)
-Oct_31.2j = dplyr::filter(just_Euro, Date == "2015-10-31")
-Oct_31.2j[is.na(Oct_31.2j)] <- 0
-Jmax_mean2 = mean(Oct_31.2j$Jmax)
-Jmax_se2 = sum(Oct_31.2j$Jmax_SE)
-Oct_31.2j = as.data.frame(cbind(Oct_31.2j,Jmax_mean2, Jmax_se2))
-Oct_31.2j = head(Oct_31.2j,1)
-Nov_06.2j = dplyr::filter(just_Euro, Date == "2015-11-06")
-Nov_06.2j[is.na(Nov_06.2j)] <- 0
-Jmax_mean2 = mean(Nov_06.2j$Jmax)
-Jmax_se2 = sum(Nov_06.2j$Jmax_SE)
-Nov_06.2j = as.data.frame(cbind(Nov_06.2j,Jmax_mean2, Jmax_se2))
-Nov_06.2j = head(Nov_06.2j,1)
-Nov_13.2j = dplyr::filter(just_Euro, Date == "2015-11-13")
-Nov_13.2j[is.na(Nov_13.2j)] <- 0
-Jmax_mean2 = mean(Nov_13.2j$Jmax)
-Jmax_se2 = sum(Nov_13.2j$Jmax_SE)
-Nov_13.2j = as.data.frame(cbind(Nov_13.2j,Jmax_mean2, Jmax_se2))
-Nov_13.2j = head(Nov_13.2j,1)
-
-Euro_Jmax = rbind(Sept_11.2j, Sept_18.2j, Sept_25.2j, Oct_02.2j, Oct_09.2j, Oct_16.2j, Oct_23.2j, Oct_31.2j, Nov_06.2j, Nov_13.2j)
-Euro_Jmax = Euro_Jmax[c("Date", "Genotype", "Avg_Temp_degC", "Min_Temp_degC",
-                        "Avg.Thickness.mm", "LMA", "LMV", "Fresh_Weight_mg", 
-                        "Dry_Weight_mg", "Ratio", "Jmax_mean2", "Jmax_se2")]
-Euro_Jmax_plot = ggplot(Euro_Jmax, aes(Date, Jmax_mean2))
-Euro_Jmax_plot + geom_point(aes(colour = Avg_Temp_degC), size=5) +
-  scale_colour_gradient(low="deepskyblue1", high="red") +
-  scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
-  ggtitle("European genotype Jmax time series") +
-  geom_abline(aes(intercept=97.99166, slope=0)) +
-  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
-  theme(axis.title = element_text(size= rel(2.0)))+
-  theme(legend.key.size = unit(2.5, "cm")) +
-  geom_errorbar(aes(ymax=Jmax_mean2+Jmax_se2, ymin=Jmax_mean2-Jmax_se2),width=3) +
-  ylab(bquote('Jmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
-  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
-        panel.background = element_blank(), axis.line = element_line(colour = "black"))
+# #PLOT JMAX VS. TIME 
+# #MO/WA Jmax time series with error bars
+# Sept_11.j = dplyr::filter(just_MoWa, Date == "2015-09-11")
+# Jmax_mean = mean(Sept_11.j$Jmax)
+# Jmax_se = sum(Sept_11.j$Jmax_SE)
+# Sept_11.j = as.data.frame(cbind(Sept_11.j,Jmax_mean, Jmax_se))
+# Sept_11.j = head(Sept_11.j,1)
+# Sept_18.j = dplyr::filter(just_MoWa, Date == "2015-09-18")
+# Jmax_mean = mean(Sept_18.j$Jmax)
+# Jmax_se = sum(Sept_18.j$Jmax_SE)
+# Sept_18.j = as.data.frame(cbind(Sept_18.j,Jmax_mean, Jmax_se))
+# Sept_18.j = head(Sept_18.j,1)
+# Sept_25.j = dplyr::filter(just_MoWa, Date == "2015-09-25")
+# Jmax_mean = mean(Sept_25.j$Jmax)
+# Jmax_se = sum(Sept_25.j$Jmax_SE)
+# Sept_25.j = as.data.frame(cbind(Sept_25.j,Jmax_mean, Jmax_se))
+# Sept_25.j = head(Sept_25.j,1)
+# Oct_02.j = dplyr::filter(just_MoWa, Date == "2015-10-02")
+# Jmax_mean = mean(Oct_02.j$Jmax)
+# Jmax_se = sum(Oct_02.j$Jmax_SE)
+# Oct_02.j = as.data.frame(cbind(Oct_02.j,Jmax_mean, Jmax_se))
+# Oct_02.j = head(Oct_02.j,1)
+# Oct_09.j = dplyr::filter(just_MoWa, Date == "2015-10-09")
+# Jmax_mean = mean(Oct_09.j$Jmax)
+# Jmax_se = sum(Oct_09.j$Jmax_SE)
+# Oct_09.j = as.data.frame(cbind(Oct_09.j,Jmax_mean, Jmax_se))
+# Oct_09.j = head(Oct_09.j,1)
+# Oct_16.j = dplyr::filter(just_MoWa, Date == "2015-10-16")
+# Jmax_mean = mean(Oct_16.j$Jmax)
+# Jmax_se = sum(Oct_16.j$Jmax_SE)
+# Oct_16.j = as.data.frame(cbind(Oct_16.j,Jmax_mean, Jmax_se))
+# Oct_16.j = head(Oct_16.j,1)
+# Oct_23.j = dplyr::filter(just_MoWa, Date == "2015-10-23")
+# Jmax_mean = mean(Oct_23.j$Jmax)
+# Jmax_se = sum(Oct_23.j$Jmax_SE)
+# Oct_23.j = as.data.frame(cbind(Oct_23.j,Jmax_mean, Jmax_se))
+# Oct_23.j = head(Oct_23.j,1)
+# Oct_31.j = dplyr::filter(just_MoWa, Date == "2015-10-31")
+# Oct_31.j[is.na(Oct_31.j)] <- 0
+# Jmax_mean = mean(Oct_31.j$Jmax)
+# Jmax_se = sum(Oct_31.j$Jmax_SE)
+# Oct_31.j = as.data.frame(cbind(Oct_31.j,Jmax_mean, Jmax_se))
+# Oct_31.j = head(Oct_31.j,1)
+# Nov_06.j = dplyr::filter(just_MoWa, Date == "2015-11-06")
+# Nov_06.j[is.na(Nov_06.j)] <- 0
+# Jmax_mean = mean(Nov_06.j$Jmax)
+# Jmax_se = sum(Nov_06.j$Jmax_SE)
+# Nov_06.j = as.data.frame(cbind(Nov_06.j,Jmax_mean, Jmax_se))
+# Nov_06.j = head(Nov_06.j,1)
+# Nov_13.j = dplyr::filter(just_MoWa, Date == "2015-11-13")
+# Nov_13.j[is.na(Nov_13.j)] <- 0
+# Jmax_mean = mean(Nov_13.j$Jmax)
+# Jmax_se = sum(Nov_13.j$Jmax_SE)
+# Nov_13.j = as.data.frame(cbind(Nov_13.j,Jmax_mean, Jmax_se))
+# Nov_13.j = head(Nov_13.j,1)
+# 
+# MoWa_Jmax = rbind(Sept_11.j, Sept_18.j, Sept_25.j, Oct_02.j, Oct_09.j, Oct_16.j, Oct_23.j, Oct_31.j, Nov_06.j)
+# MoWa_Jmax = MoWa_Jmax[c("Date", "Genotype", "Avg_Temp_degC", "Min_Temp_degC",
+#                           "Avg.Thickness.mm", "LMA", "LMV", "Fresh_Weight_mg", 
+#                           "Dry_Weight_mg", "Ratio", "Jmax_mean", "Jmax_se")]
+# MoWa_Jmax_plot = ggplot(MoWa_Jmax, aes(Date, Jmax_mean))
+# MoWa_Jmax_plot + geom_point(aes(colour = MoWa_Jmax$Avg_Temp_degC), size=5) +
+#   scale_colour_gradient(low="deepskyblue1", high="red") +
+#   scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
+#   ggtitle("MO/WA genotype Jmax time series") +
+#   geom_abline(aes(intercept=75.96318, slope=0)) +
+#   theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+#   theme(axis.title = element_text(size= rel(2.0)))+
+#   theme(legend.key.size = unit(2.5, "cm")) +
+#   geom_errorbar(aes(ymax=Jmax_mean+Jmax_se, ymin=Jmax_mean-Jmax_se),width=3) +
+#   ylab(bquote('Jmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
+#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+#         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+# 
+# #EUROPEAN Jmax time series with error bars
+# Sept_11.2j = dplyr::filter(just_Euro, Date == "2015-09-11")
+# Jmax_mean2 = mean(Sept_11.2j$Jmax)
+# Jmax_se2 = sum(Sept_11.2j$Jmax_SE)
+# Sept_11.2j = as.data.frame(cbind(Sept_11.2j,Jmax_mean2, Jmax_se2))
+# Sept_11.2j = head(Sept_11.2j,1)
+# Sept_18.2j = dplyr::filter(just_Euro, Date == "2015-09-18")
+# Jmax_mean2 = mean(Sept_18.2j$Jmax)
+# Jmax_se2 = sum(Sept_18.2j$Jmax_SE)
+# Sept_18.2j = as.data.frame(cbind(Sept_18.2j,Jmax_mean2, Jmax_se2))
+# Sept_18.2j = head(Sept_18.2j,1)
+# Sept_25.2j = dplyr::filter(just_Euro, Date == "2015-09-25")
+# Jmax_mean2 = mean(Sept_25.2j$Jmax)
+# Jmax_se2 = sum(Sept_25.2j$Jmax_SE)
+# Sept_25.2j = as.data.frame(cbind(Sept_25.2j,Jmax_mean2, Jmax_se2))
+# Sept_25.2j = head(Sept_25.2j,1)
+# Oct_02.2j = dplyr::filter(just_Euro, Date == "2015-10-02")
+# Jmax_mean2 = mean(Oct_02.2j$Jmax)
+# Jmax_se2 = sum(Oct_02.2j$Jmax_SE)
+# Oct_02.2j = as.data.frame(cbind(Oct_02.2j,Jmax_mean2, Jmax_se2))
+# Oct_02.2j = head(Oct_02.2j,1)
+# Oct_09.2j = dplyr::filter(just_Euro, Date == "2015-10-09")
+# Jmax_mean2 = mean(Oct_09.2j$Jmax)
+# Jmax_se2 = sum(Oct_09.2j$Jmax_SE)
+# Oct_09.2j = as.data.frame(cbind(Oct_09.2j,Jmax_mean2, Jmax_se2))
+# Oct_09.2j = head(Oct_09.2j,1)
+# Oct_16.2j = dplyr::filter(just_Euro, Date == "2015-10-16")
+# Jmax_mean2 = mean(Oct_16.2j$Jmax)
+# Jmax_se2 = sum(Oct_16.2j$Jmax_SE)
+# Oct_16.2j = as.data.frame(cbind(Oct_16.2j,Jmax_mean2, Jmax_se2))
+# Oct_16.2j = head(Oct_16.2j,1)
+# Oct_23.2j = dplyr::filter(just_Euro, Date == "2015-10-23")
+# Jmax_mean2 = mean(Oct_23.2j$Jmax)
+# Jmax_se2 = sum(Oct_23.2j$Jmax_SE)
+# Oct_23.2j = as.data.frame(cbind(Oct_23.2j,Jmax_mean2, Jmax_se2))
+# Oct_23.2j = head(Oct_23.2j,1)
+# Oct_31.2j = dplyr::filter(just_Euro, Date == "2015-10-31")
+# Oct_31.2j[is.na(Oct_31.2j)] <- 0
+# Jmax_mean2 = mean(Oct_31.2j$Jmax)
+# Jmax_se2 = sum(Oct_31.2j$Jmax_SE)
+# Oct_31.2j = as.data.frame(cbind(Oct_31.2j,Jmax_mean2, Jmax_se2))
+# Oct_31.2j = head(Oct_31.2j,1)
+# Nov_06.2j = dplyr::filter(just_Euro, Date == "2015-11-06")
+# Nov_06.2j[is.na(Nov_06.2j)] <- 0
+# Jmax_mean2 = mean(Nov_06.2j$Jmax)
+# Jmax_se2 = sum(Nov_06.2j$Jmax_SE)
+# Nov_06.2j = as.data.frame(cbind(Nov_06.2j,Jmax_mean2, Jmax_se2))
+# Nov_06.2j = head(Nov_06.2j,1)
+# Nov_13.2j = dplyr::filter(just_Euro, Date == "2015-11-13")
+# Nov_13.2j[is.na(Nov_13.2j)] <- 0
+# Jmax_mean2 = mean(Nov_13.2j$Jmax)
+# Jmax_se2 = sum(Nov_13.2j$Jmax_SE)
+# Nov_13.2j = as.data.frame(cbind(Nov_13.2j,Jmax_mean2, Jmax_se2))
+# Nov_13.2j = head(Nov_13.2j,1)
+# 
+# Euro_Jmax = rbind(Sept_11.2j, Sept_18.2j, Sept_25.2j, Oct_02.2j, Oct_09.2j, Oct_16.2j, Oct_23.2j, Oct_31.2j, Nov_06.2j, Nov_13.2j)
+# Euro_Jmax = Euro_Jmax[c("Date", "Genotype", "Avg_Temp_degC", "Min_Temp_degC",
+#                         "Avg.Thickness.mm", "LMA", "LMV", "Fresh_Weight_mg", 
+#                         "Dry_Weight_mg", "Ratio", "Jmax_mean2", "Jmax_se2")]
+# Euro_Jmax_plot = ggplot(Euro_Jmax, aes(Date, Jmax_mean2))
+# Euro_Jmax_plot + geom_point(aes(colour = Avg_Temp_degC), size=5) +
+#   scale_colour_gradient(low="deepskyblue1", high="red") +
+#   scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
+#   ggtitle("European genotype Jmax time series") +
+#   geom_abline(aes(intercept=97.99166, slope=0)) +
+#   theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+#   theme(axis.title = element_text(size= rel(2.0)))+
+#   theme(legend.key.size = unit(2.5, "cm")) +
+#   geom_errorbar(aes(ymax=Jmax_mean2+Jmax_se2, ymin=Jmax_mean2-Jmax_se2),width=3) +
+#   ylab(bquote('Jmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
+#   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+#         panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
 #PLOT VCMAX VS. JMAX WITH DOUBLE ERROR BARS 
 #Build a df with the means for Vcmax and Jmax instead of the raw data
@@ -662,6 +662,27 @@ loc_plot + geom_bar(stat="identity") +
   theme(legend.key.size = unit(2.5, "cm")) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
         panel.background = element_blank(), axis.line = element_line(colour = "black"))
+#Trying a combined plot of the Vcmax for both genotypes, avg temperature, and photoperiod,
+#color coding by Genotype
 
+#Have to layer MoWa and Euro Vcmax_mean's 
+#and also the Avg_Temp 
+#and get daylength in there
 
+load("~/B2-Honors-Proj/summary_stats.RDA")
+test = ggplot(data = summary_stats, aes(x = Date, y = Vcmax_mean, colour = Genotype, ymax = Vcmax_mean + Vcmax_se, ymin = Vcmax_mean - Vcmax_se))
+test + geom_point(size=5) +
+  geom_point(aes(x = Date, y = Avg_Temp_degC), colour = "black", size = 5) +
+  geom_path(aes(x = Date, y = Avg_Temp_degC), colour = "black") +
+  geom_abline(aes(intercept=31.41971, slope=0)) +
+  geom_abline(aes(intercept=46.51862, slope=0)) +
+  scale_x_date(breaks = date_breaks(width = "1 week"), labels = date_format("%m/%d")) + 
+  ggtitle("Vcmax time series") +
+  ylab(bquote('Vcmax ('*mu~ 'mol' ~ m^-2~s^-1*')')) +
+  geom_errorbar(width=3) +
+  theme(plot.title=element_text(family="Times", face="bold", size=30)) +
+  theme(axis.title = element_text(size= rel(2.0)))+
+  theme(legend.key.size = unit(2.5, "cm")) +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), 
+        panel.background = element_blank(), axis.line = element_line(colour = "black"))
 
